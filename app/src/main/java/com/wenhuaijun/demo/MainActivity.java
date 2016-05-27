@@ -4,96 +4,83 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.wenhuaijun.easytagdragview.DragDropListView;
-import com.wenhuaijun.easytagdragview.IDragEntity;
+import com.wenhuaijun.easytagdragview.EasyTipDragView;
+import com.wenhuaijun.easytagdragview.bean.SimpleTitleTip;
+import com.wenhuaijun.easytagdragview.bean.Tip;
 import com.wenhuaijun.easytagdragview.R;
-import com.wenhuaijun.easytagdragview.SimpleDragEntity;
-import com.wenhuaijun.easytagdragview.TagItemView;
-import com.wenhuaijun.easytagdragview.adapter.AbsTileAdapter;
+import com.wenhuaijun.easytagdragview.widget.TipItemView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AbsTileAdapter.DragDropListener,TagItemView.OnSelectedListener, TagItemView.OnDeleteClickListener {
-    private DragDropListView dragDropListView;
-    private GridView addGridView;
-    private AddGridAdapter addGridAdapter;
-    private TagAdapter tagDragAdapter;
+public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.DragDropListener, TipItemView.OnSelectedListener, TipItemView.OnDeleteClickListener */{
+    private EasyTipDragView easyTipDragView;
+   // private Toolbar toolbar;
+    private Button btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dragDropListView =(DragDropListView)findViewById(R.id.tagdrag_view);
-        addGridView =(GridView)findViewById(R.id.add_gridview);
-        tagDragAdapter = new TagAdapter(this, this,this,this);
-        tagDragAdapter.setData(obtainData());
-        //添加拖拽监听，监听写在Adapter里
-        dragDropListView.getDragDropController().addOnDragDropListener(tagDragAdapter);
-        dragDropListView.setDragShadowOverlay((ImageView) findViewById(R.id.tile_drag_shadow_overlay));
-        dragDropListView.setAdapter(tagDragAdapter);
-
-        addGridAdapter = new AddGridAdapter(new ArrayList<IDragEntity>(obtainAddData()));
-        addGridView.setAdapter(addGridAdapter);
-        addGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+  //      toolbar =(Toolbar)findViewById(R.id.toolbar);
+     // tableLayout =(TableLayout)findViewById(R.id.tabLayout);
+    //    setSupportActionBar(toolbar);
+        easyTipDragView =(EasyTipDragView)findViewById(R.id.easy_tip_drag_view);
+        btn =(Button)findViewById(R.id.btn);
+        easyTipDragView.setAddData(obtainAddData());
+        easyTipDragView.setDragData(obtainData());
+        easyTipDragView.setSelectedListener(new TipItemView.OnSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                tagDragAdapter.mDragEntries.add(addGridAdapter.getiDragEntities().get(position));
-                tagDragAdapter.reFresh();
-                addGridAdapter.getiDragEntities().remove(position);
-                addGridAdapter.notifyDataSetChanged();
-
+            public void onTileSelected(Tip entity, int position, View view) {
+                toast(((SimpleTitleTip) entity).getTip());
+            }
+        });
+        easyTipDragView.setDataResultCallback(new EasyTipDragView.OnDataChangeResultCallback() {
+            @Override
+            public void onDataChangeResult(ArrayList<Tip> tips) {
+                Log.i("heheda", tips.toString());
+            }
+        });
+        easyTipDragView.setOnCompleteCallback(new EasyTipDragView.OnCompleteCallback() {
+            @Override
+            public void onComplete(ArrayList<Tip> tips) {
+                toast("最终数据：" + tips.toString());
+                btn.setVisibility(View.VISIBLE);
+            }
+        });
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                easyTipDragView.open();
+                btn.setVisibility(View.GONE);
             }
         });
     }
 
-    private List<IDragEntity> obtainData() {
-        List<IDragEntity> list = new ArrayList<>();
+    private List<Tip> obtainData() {
+        List<Tip> list = new ArrayList<>();
         for (int i = 0; i <= 24; i++) {
-            SimpleDragEntity entry = new SimpleDragEntity();
+            SimpleTitleTip entry = new SimpleTitleTip();
             entry.setId(i);
-            entry.setTag(i + " Item");
+            entry.setTip(i + " Item");
             list.add(entry);
         }
         return list;
     }
 
-    private List<IDragEntity> obtainAddData() {
-        List<IDragEntity> list = new ArrayList<>();
+    private List<Tip> obtainAddData() {
+        List<Tip> list = new ArrayList<>();
         for (int i = 25; i <= 35; i++) {
-            SimpleDragEntity entry = new SimpleDragEntity();
+            SimpleTitleTip entry = new SimpleTitleTip();
             entry.setId(i);
-            entry.setTag(i + " Item");
+            entry.setTip(i + " Item");
             list.add(entry);
         }
         return list;
     }
-
-    @Override
-    public DragDropListView getDragDropListView() {
-        return dragDropListView;
-    }
-
-    @Override
-    public void onDataSetChangedForResult(ArrayList<IDragEntity> list) {
-        Log.i("heheda",list.toString());
-    }
-
-    //item被点击时
-    @Override
-    public void onTileSelected(IDragEntity entity, int position, View view) {
-        Toast.makeText(MainActivity.this, ((SimpleDragEntity) entity).getTag(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onDeleteClick(IDragEntity entity, int position, View view) {
-        addGridAdapter.getiDragEntities().add(entity);
-        addGridAdapter.notifyDataSetChanged();
-        tagDragAdapter.mDragEntries.remove(position);
-        tagDragAdapter.reFresh();
+    public void toast(String str){
+        Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
     }
 }

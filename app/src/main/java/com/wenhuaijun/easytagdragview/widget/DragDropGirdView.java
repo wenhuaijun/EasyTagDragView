@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wenhuaijun.easytagdragview;
+package com.wenhuaijun.easytagdragview.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -32,55 +32,40 @@ import android.view.ViewConfiguration;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-//实现DragOropListener
-public class DragDropListView extends GridView implements OnDragDropListener,
+import com.wenhuaijun.easytagdragview.listener.OnDragDropListener;
+import com.wenhuaijun.easytagdragview.R;
+
+public class DragDropGirdView extends GridView implements OnDragDropListener,
         DragDropController.DragItemContainer {
 
-    public static final String LOG_TAG = DragDropListView.class.getSimpleName();
-
+    public static final String LOG_TAG = DragDropGirdView.class.getSimpleName();
     public static final String DRAG_FAVORITE_TILE = "FAVORITE_TILE";
-    //手指滑动判断为有效滑动的最短距离
     private float mTouchSlop;
-
     private boolean mIsFixedHeight;
-    //滑动的上界限
     private int mTopScrollBound;
-    //滑动的下界限
     private int mBottomScrollBound;
-    //上次拖动的y坐标
     private int mLastDragY;
-    //执行ite滑动时UI变化的handler
     private Handler mScrollHandler;
-    //mScrollHandler.postDelayed的时间
     private final long SCROLL_HANDLER_DELAY_MILLIS = 5;
-    //拖动时滑动的距离
     private final int DRAG_SCROLL_PX_UNIT = 25;
-
     private boolean mIsDragScrollerRunning = false;
     private int mTouchDownForDragStartX;
     private int mTouchDownForDragStartY;
-
-    //拖动时浮起来的bitmap
     private Bitmap mDragShadowBitmap;
     private ImageView mDragShadowOverlay;
     private View mDragShadowParent;
     private int mAnimationDuration;
-
     final int[] mLocationOnScreen = new int[2];
-
     private int mTouchOffsetToChildLeft;
     private int mTouchOffsetToChildTop;
-
     private int mDragShadowLeft;
     private int mDragShadowTop;
 
     private DragDropController mDragDropController = new DragDropController(this);
 
     private final float DRAG_SHADOW_ALPHA = 0.7f;
-    //什么比例
     private final float BOUND_GAP_RATIO = 0.2f;
 
-    //handler执行的item滑动Runnable
     private final Runnable mDragScroller = new Runnable() {
         @Override
         public void run() {
@@ -89,7 +74,6 @@ public class DragDropListView extends GridView implements OnDragDropListener,
             } else if (mLastDragY >= mBottomScrollBound) {
                 smoothScrollBy(DRAG_SCROLL_PX_UNIT, (int) SCROLL_HANDLER_DELAY_MILLIS);
             }
-            //每隔5毫秒执行滑动
             mScrollHandler.postDelayed(this, SCROLL_HANDLER_DELAY_MILLIS);
         }
     };
@@ -107,22 +91,21 @@ public class DragDropListView extends GridView implements OnDragDropListener,
                 }
             };
 
-    public DragDropListView(Context context) {
+    public DragDropGirdView(Context context) {
         this(context, null);
     }
 
-    public DragDropListView(Context context, AttributeSet attrs) {
+    public DragDropGirdView(Context context, AttributeSet attrs) {
         this(context, attrs, -1);
     }
 
-    public DragDropListView(Context context, AttributeSet attrs, int defStyle) {
+    public DragDropGirdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.DragDropListView);
-        mIsFixedHeight = ta.getBoolean(R.styleable.DragDropListView_fixed_type, false);
-        mAnimationDuration = ta.getInteger(R.styleable.DragDropListView_anim_duration, context.getResources().getInteger(R.integer.fade_duration));
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.DragDropGirdView);
+        mIsFixedHeight = ta.getBoolean(R.styleable.DragDropGirdView_fixed_type, false);
+        mAnimationDuration = ta.getInteger(R.styleable.DragDropGirdView_anim_duration, context.getResources().getInteger(R.integer.fade_duration));
         ta.recycle();
         mTouchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop();
-        //mDragDropController 也添加一个DragDropListener;
         mDragDropController.addOnDragDropListener(this);
     }
 
@@ -162,7 +145,6 @@ public class DragDropListView extends GridView implements OnDragDropListener,
 
             case DragEvent.ACTION_DRAG_LOCATION:
                 mLastDragY = eY;
-                //开始悬浮
                 mDragDropController.handleDragHovered(this, eX, eY);
                 if (!mIsDragScrollerRunning &&
                         (Math.abs(mLastDragY - mTouchDownForDragStartY) >= 4 * mTouchSlop)) {

@@ -1,6 +1,8 @@
-package com.wenhuaijun.easytagdragview;
+package com.wenhuaijun.easytagdragview.widget;
 
 import android.view.View;
+
+import com.wenhuaijun.easytagdragview.listener.OnDragDropListener;
 
 import java.util.ArrayList;
 import java.util.List;

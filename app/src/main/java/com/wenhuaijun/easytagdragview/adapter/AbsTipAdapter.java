@@ -19,15 +19,14 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.BaseAdapter;
 
-import com.wenhuaijun.easytagdragview.DragDropListView;
-import com.wenhuaijun.easytagdragview.IDragEntity;
-import com.wenhuaijun.easytagdragview.OnDragDropListener;
+import com.wenhuaijun.easytagdragview.widget.DragDropGirdView;
+import com.wenhuaijun.easytagdragview.bean.Tip;
+import com.wenhuaijun.easytagdragview.listener.OnDragDropListener;
 import com.wenhuaijun.easytagdragview.R;
 
 import java.util.ArrayList;
@@ -37,9 +36,9 @@ import java.util.List;
 /**
  * Also allows for a configurable number of columns as well as a maximum row of tiled view.
  */
-public abstract class AbsTileAdapter extends BaseAdapter implements
+public abstract class AbsTipAdapter extends BaseAdapter implements
         OnDragDropListener {
-    private static final String TAG = "AbsTileAdapter";
+    private static final String TAG = "AbsTipAdapter";
 
     protected DragDropListener mDragDropListener;
 
@@ -48,23 +47,23 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
     /**
      * Contact data stored in cache. This is used to populate the associated view.
      */
-    public ArrayList<IDragEntity> mDragEntries = null;
+    protected ArrayList<Tip> tips = null;
     /**
      * Back up of（备份） the temporarily removed Contact during dragging.
      */
-    private IDragEntity mDraggedEntry = null;
+    private Tip tempTip = null;
     /**
      * Position of the temporarily removed contact in the cache.
      */
-    private int mDraggedEntryIndex = -1;
+    private int tempTipIndex = -1;
     /**
      * New position of the temporarily removed contact in the cache.
      */
-    private int mDropEntryIndex = -1;
+    private int newTipIndex = -1;
     /**
      * New position of the temporarily entered contact in the cache.
      */
-    private int mDragEnteredEntryIndex = -1;
+    private int mDragEnteredTipIndex = -1;
 
     private boolean mAwaitingRemove = false;
     private boolean mDelayCursorUpdates = false;
@@ -84,7 +83,7 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
     private final HashMap<Long, Integer> mItemIdLeftMap = new HashMap<Long, Integer>();
 
 
-    public static IDragEntity BLANK_ENTRY = new IDragEntity() {
+    public static Tip BLANK_ENTRY = new Tip() {
         private int id;
 
         @Override
@@ -100,17 +99,17 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
 
     public interface DragDropListener {
 
-        DragDropListView getDragDropListView();
+        DragDropGirdView getDragDropGirdView();
 
-        void onDataSetChangedForResult(ArrayList<IDragEntity> list);
+        void onDataSetChangedForResult(ArrayList<Tip> list);
     }
 
 
-    public AbsTileAdapter(Context context,
-                          DragDropListener dragDropListener) {
+    public AbsTipAdapter(Context context,
+                         DragDropListener dragDropListener) {
         mDragDropListener = dragDropListener;
         mContext = context;
-        mDragEntries = new ArrayList<IDragEntity>();
+        tips = new ArrayList<Tip>();
         mAnimationDuration = context.getResources().getInteger(R.integer.fade_duration);
     }
 
@@ -149,11 +148,11 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
     }
 
     //当数据改变时调用
-    public void setData(List<IDragEntity> cursor) {
-        if (!mDelayCursorUpdates && cursor != null) {
-            mDragEntries.clear();
-            mDragEntries.addAll(cursor);
-            // cause a refresh of any views that rely on this data
+    public void setData(List<Tip> tips) {
+        if (!mDelayCursorUpdates && tips != null) {
+            this.tips.clear();
+            this.tips.addAll(tips);
+            // cause a refreshData of any views that rely on this data
             notifyDataSetChanged();
             // about to start redraw
             onDataSetChangedForAnimation();
@@ -163,11 +162,11 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
 
     @Override
     public int getCount() {
-        if (mDragEntries == null) {
+        if (tips == null) {
             return 0;
         }
 
-        return mDragEntries.size();
+        return tips.size();
     }
 
     /**
@@ -175,8 +174,8 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
      * on the row for the given position.
      */
     @Override
-    public IDragEntity getItem(int position) {
-        return mDragEntries.get(position);
+    public Tip getItem(int position) {
+        return tips.get(position);
     }
 
     /**
@@ -188,7 +187,7 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
      */
     @Override
     public long getItemId(int position) {
-        return mDragEntries.get(position).getId();
+        return tips.get(position).getId();
     }
 
     @Override
@@ -220,7 +219,7 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
     }
 
     /**
-     * Temporarily(暂时的) removes a contact(接触) from the list for UI refresh. Stores data for this contact
+     * Temporarily(暂时的) removes a contact(接触) from the list for UI refreshData. Stores data for this contact
      * in the back-up variable.
      *
      * @param index Position of the contact to be removed.
@@ -228,36 +227,36 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
     public void popDragEntry(int index) {
         if (isIndexInBound(index)) {
             //备份一份被拖动的数据
-            mDraggedEntry = mDragEntries.get(index);
-            mDraggedEntryIndex = index;
-            mDragEnteredEntryIndex = index;
+            tempTip = tips.get(index);
+            tempTipIndex = index;
+            mDragEnteredTipIndex = index;
             markDropArea(index);
         }
     }
 
     /**
-     * @param itemIndex Position of the contact in {@link #mDragEntries}.
-     * @return True if the given index is valid for {@link #mDragEntries}.
+     * @param itemIndex Position of the contact in {@link #tips}.
+     * @return True if the given index is valid for {@link #tips}.
      */
     public boolean isIndexInBound(int itemIndex) {
-        return itemIndex >= 0 && itemIndex < mDragEntries.size();
+        return itemIndex >= 0 && itemIndex < tips.size();
     }
 
     /**
-     * Mark the tile(瓦片) as drop area by given the item index in {@link #mDragEntries}.
+     * Mark the tile(瓦片) as drop area by given the item index in {@link #tips}.
      *
-     * @param itemIndex Position of the contact in {@link #mDragEntries}.
+     * @param itemIndex Position of the contact in {@link #tips}.
      */
     private void markDropArea(int itemIndex) {
-        if (mDraggedEntry != null && isIndexInBound(mDragEnteredEntryIndex) &&
+        if (tempTip != null && isIndexInBound(mDragEnteredTipIndex) &&
                 isIndexInBound(itemIndex)) {
             cacheOffsetsForDataSetChange();
             // Remove the old placeholder item and place the new placeholder item.
-            final int oldIndex = mDragEnteredEntryIndex;
-            mDragEntries.remove(mDragEnteredEntryIndex);
-            mDragEnteredEntryIndex = itemIndex;
-            mDragEntries.add(mDragEnteredEntryIndex, BLANK_ENTRY);
-            BLANK_ENTRY.setId(mDraggedEntry.getId());
+            final int oldIndex = mDragEnteredTipIndex;
+            tips.remove(mDragEnteredTipIndex);
+            mDragEnteredTipIndex = itemIndex;
+            tips.add(mDragEnteredTipIndex, BLANK_ENTRY);
+            BLANK_ENTRY.setId(tempTip.getId());
             //启动动画
             onDataSetChangedForAnimation();
             notifyDataSetChanged();
@@ -268,23 +267,23 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
      * Drops the temporarily removed contact to the desired location in the list.
      */
     public void handleDrop() {
-        if (mDraggedEntry != null) {
-            if (isIndexInBound(mDragEnteredEntryIndex) &&
-                    mDragEnteredEntryIndex != mDraggedEntryIndex) {
-                mDropEntryIndex = mDragEnteredEntryIndex;
-                mDragEntries.set(mDropEntryIndex, mDraggedEntry);
+        if (tempTip != null) {
+            if (isIndexInBound(mDragEnteredTipIndex) &&
+                    mDragEnteredTipIndex != tempTipIndex) {
+                newTipIndex = mDragEnteredTipIndex;
+                tips.set(newTipIndex, tempTip);
                 cacheOffsetsForDataSetChange();
                 notifyDataSetChanged();
-            } else if (isIndexInBound(mDraggedEntryIndex)) {
-                mDragEntries.remove(mDragEnteredEntryIndex);
-                mDragEntries.add(mDraggedEntryIndex, mDraggedEntry);
-                mDropEntryIndex = mDraggedEntryIndex;
+            } else if (isIndexInBound(tempTipIndex)) {
+                tips.remove(mDragEnteredTipIndex);
+                tips.add(tempTipIndex, tempTip);
+                newTipIndex = tempTipIndex;
                 notifyDataSetChanged();
             }
-            mDraggedEntry = null;
+            tempTip = null;
 
-            if (mDraggedEntryIndex != mDragEnteredEntryIndex) {
-                mDragDropListener.onDataSetChangedForResult(mDragEntries);
+            if (tempTipIndex != mDragEnteredTipIndex) {
+                mDragDropListener.onDataSetChangedForResult(tips);
             }
 
         }
@@ -300,12 +299,12 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
      * @param view
      * @return
      */
-    protected abstract IDragEntity getDragEntity(View view);
+    protected abstract Tip getDragEntity(View view);
 
     @Override
     public void onDragStarted(int x, int y, View view) {
         setInDragging(true);
-        final int itemIndex = mDragEntries.indexOf(getDragEntity(view));
+        final int itemIndex = tips.indexOf(getDragEntity(view));
         popDragEntry(itemIndex);
     }
 
@@ -314,8 +313,8 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
         if (view == null) {
             return;
         }
-        final int itemIndex = mDragEntries.indexOf(getDragEntity(view));
-        if (mInDragging && mDragEnteredEntryIndex != itemIndex
+        final int itemIndex = tips.indexOf(getDragEntity(view));
+        if (mInDragging && mDragEnteredTipIndex != itemIndex
                 && isIndexInBound(itemIndex) && itemIndex > mTilesStartLimit &&  itemIndex < mTilesEndLimit) {
             markDropArea(itemIndex);
         }
@@ -331,7 +330,7 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
 
     @Override
     public void onDroppedOnRemove() {
-        if (mDraggedEntry != null) {
+        if (tempTip != null) {
             //TODO remove op
             mAwaitingRemove = true;
         }
@@ -355,18 +354,18 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
             return;
         }
 
-        final ViewTreeObserver observer = mDragDropListener.getDragDropListView().getViewTreeObserver();
+        final ViewTreeObserver observer = mDragDropListener.getDragDropGirdView().getViewTreeObserver();
         observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @SuppressWarnings("unchecked")
             @Override
             public boolean onPreDraw() {
                 observer.removeOnPreDrawListener(this);
-                final int firstVisiblePosition = mDragDropListener.getDragDropListView().getFirstVisiblePosition();
+                final int firstVisiblePosition = mDragDropListener.getDragDropGirdView().getFirstVisiblePosition();
 
                 final AnimatorSet animSet = new AnimatorSet();
                 final ArrayList<Animator> animators = new ArrayList<Animator>();
-                for (int i = 0; i < mDragDropListener.getDragDropListView().getChildCount(); i++) {
-                    final View child = mDragDropListener.getDragDropListView().getChildAt(i);
+                for (int i = 0; i < mDragDropListener.getDragDropGirdView().getChildCount(); i++) {
+                    final View child = mDragDropListener.getDragDropGirdView().getChildAt(i);
                     int position = firstVisiblePosition + i;
 
                     if (!isIndexInBound(position)) {
@@ -434,9 +433,9 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
 
 
     private void saveOffsets() {
-        final int firstVisiblePosition = mDragDropListener.getDragDropListView().getFirstVisiblePosition();
-        for (int i = 0; i < mDragDropListener.getDragDropListView().getChildCount(); i++) {
-            final View child = mDragDropListener.getDragDropListView().getChildAt(i);
+        final int firstVisiblePosition = mDragDropListener.getDragDropGirdView().getFirstVisiblePosition();
+        for (int i = 0; i < mDragDropListener.getDragDropGirdView().getChildCount(); i++) {
+            final View child = mDragDropListener.getDragDropGirdView().getChildAt(i);
             final int position = firstVisiblePosition + i;
 
             if (!isIndexInBound(position)) {

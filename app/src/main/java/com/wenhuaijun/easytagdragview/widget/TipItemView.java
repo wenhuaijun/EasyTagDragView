@@ -13,33 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wenhuaijun.easytagdragview;
+package com.wenhuaijun.easytagdragview.widget;
 
 import android.content.ClipData;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.wenhuaijun.easytagdragview.adapter.AbsTileAdapter;
+import com.wenhuaijun.easytagdragview.bean.Tip;
+import com.wenhuaijun.easytagdragview.R;
+import com.wenhuaijun.easytagdragview.bean.SimpleTitleTip;
+import com.wenhuaijun.easytagdragview.adapter.AbsTipAdapter;
 
 
 /**
  * A TileView displays a picture and name
  */
-public class TagItemView extends RelativeLayout {
-    private final static String TAG = TagItemView.class.getSimpleName();
+public class TipItemView extends RelativeLayout {
+    private final static String TAG = TipItemView.class.getSimpleName();
     private static final ClipData EMPTY_CLIP_DATA = ClipData.newPlainText("", "");
     protected OnSelectedListener mListener;
     protected OnDeleteClickListener mDeleteListener;
-    private IDragEntity mIDragEntity;
+    private Tip mIDragEntity;
     private TextView title;
     private ImageView delete;
     private int position;
 
-    public TagItemView(Context context, AttributeSet attrs) {
+    public TipItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -53,7 +57,7 @@ public class TagItemView extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if (mDeleteListener != null) {
-                    mDeleteListener.onDeleteClick(mIDragEntity, position, TagItemView.this);
+                    mDeleteListener.onDeleteClick(mIDragEntity, position, TipItemView.this);
                 }
 
             }
@@ -66,25 +70,26 @@ public class TagItemView extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if (mListener == null) {
+                    Log.i("heheda","mListener ==null");
                     return;
                 }
 
-                mListener.onTileSelected(mIDragEntity,position,TagItemView.this);
+                mListener.onTileSelected(mIDragEntity,position, TipItemView.this);
             }
         };
     }
 
-    public IDragEntity getDragEntity() {
+    public Tip getDragEntity() {
         return mIDragEntity;
     }
 
-    public void renderData(IDragEntity entity) {
+    public void renderData(Tip entity) {
         mIDragEntity = entity;
 
-        if (entity != null && entity != AbsTileAdapter.BLANK_ENTRY) {
+        if (entity != null && entity != AbsTipAdapter.BLANK_ENTRY) {
 
-            if(entity instanceof SimpleDragEntity) {
-                title.setText(((SimpleDragEntity) mIDragEntity).getTag());
+            if(entity instanceof SimpleTitleTip) {
+                title.setText(((SimpleTitleTip) mIDragEntity).getTip());
 
             }
             setVisibility(View.VISIBLE);
@@ -99,7 +104,7 @@ public class TagItemView extends RelativeLayout {
 
                 // NOTE The drag shadow is handled in the ListView.
                 v.startDrag(EMPTY_CLIP_DATA, new View.DragShadowBuilder(),
-                        DragDropListView.DRAG_FAVORITE_TILE, 0);
+                        DragDropGirdView.DRAG_FAVORITE_TILE, 0);
                 return true;
             }
         });
@@ -121,11 +126,11 @@ public class TagItemView extends RelativeLayout {
         /**
          * Notification that the tile was selected; no specific action is dictated.
          */
-        void onTileSelected(IDragEntity entity,int position,View view);
+        void onTileSelected(Tip entity,int position,View view);
 
     }
     public interface OnDeleteClickListener{
-        void onDeleteClick(IDragEntity entity,int position,View view);
+        void onDeleteClick(Tip entity,int position,View view);
     }
     public void showDeleteImg(){
         delete.setVisibility(View.VISIBLE);
