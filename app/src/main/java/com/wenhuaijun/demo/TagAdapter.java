@@ -23,9 +23,11 @@ public class TagAdapter extends AbsTileAdapter implements View.OnLongClickListen
     private boolean  isEditing =false;
     private static final ClipData EMPTY_CLIP_DATA = ClipData.newPlainText("", "");
     private TagItemView.OnSelectedListener mListener;
-    public TagAdapter(Context context, DragDropListener dragDropListener,TagItemView.OnSelectedListener mListener) {
+    private TagItemView.OnDeleteClickListener deleteClickListener;
+    public TagAdapter(Context context, DragDropListener dragDropListener,TagItemView.OnSelectedListener mListener,TagItemView.OnDeleteClickListener deleteClickListener) {
         super(context, dragDropListener);
         this.mListener =mListener;
+        this.deleteClickListener =deleteClickListener;
 
     }
 
@@ -44,7 +46,7 @@ public class TagAdapter extends AbsTileAdapter implements View.OnLongClickListen
         view.setItemListener(position, mListener);
         view.setOnLongClickListener(this);
         //设置删除监听
-        view.setDeleteClickListener(position, this);
+        view.setDeleteClickListener(position, deleteClickListener);
         //绑定数据
         view.renderData(getItem(position));
         return view;

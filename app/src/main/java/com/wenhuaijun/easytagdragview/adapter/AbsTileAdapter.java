@@ -444,9 +444,9 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
             }
             final long itemId = getItemId(position);
 
-            Log.e("heheda", "Saving itemId: " + itemId + " for listview child " + i + " Top: "
+            /*Log.e("heheda", "Saving itemId: " + itemId + " for listview child " + i + " Top: "
                     + child.getTop() + " Left: "
-                    + child.getLeft());
+                    + child.getLeft());*/
 
             mItemIdTopMap.put(itemId, child.getTop());
             mItemIdLeftMap.put(itemId, child.getLeft());

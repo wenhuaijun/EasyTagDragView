@@ -19,29 +19,31 @@ import com.wenhuaijun.easytagdragview.adapter.AbsTileAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AbsTileAdapter.DragDropListener,TagItemView.OnSelectedListener {
+public class MainActivity extends AppCompatActivity implements AbsTileAdapter.DragDropListener,TagItemView.OnSelectedListener, TagItemView.OnDeleteClickListener {
     private DragDropListView dragDropListView;
     private GridView addGridView;
+    private AddGridAdapter addGridAdapter;
+    private TagAdapter tagDragAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dragDropListView =(DragDropListView)findViewById(R.id.tagdrag_view);
         addGridView =(GridView)findViewById(R.id.add_gridview);
-        final TagAdapter adapter = new TagAdapter(this, this,this);
-        adapter.setData(obtainData());
+        tagDragAdapter = new TagAdapter(this, this,this,this);
+        tagDragAdapter.setData(obtainData());
         //添加拖拽监听，监听写在Adapter里
-        dragDropListView.getDragDropController().addOnDragDropListener(adapter);
+        dragDropListView.getDragDropController().addOnDragDropListener(tagDragAdapter);
         dragDropListView.setDragShadowOverlay((ImageView) findViewById(R.id.tile_drag_shadow_overlay));
-        dragDropListView.setAdapter(adapter);
+        dragDropListView.setAdapter(tagDragAdapter);
 
-        final AddGridAdapter addGridAdapter = new AddGridAdapter(new ArrayList<IDragEntity>(obtainAddData()));
+        addGridAdapter = new AddGridAdapter(new ArrayList<IDragEntity>(obtainAddData()));
         addGridView.setAdapter(addGridAdapter);
         addGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                adapter.mDragEntries.add(addGridAdapter.getiDragEntities().get(position));
-                adapter.reFresh();
+                tagDragAdapter.mDragEntries.add(addGridAdapter.getiDragEntities().get(position));
+                tagDragAdapter.reFresh();
                 addGridAdapter.getiDragEntities().remove(position);
                 addGridAdapter.notifyDataSetChanged();
 
@@ -85,5 +87,13 @@ public class MainActivity extends AppCompatActivity implements AbsTileAdapter.Dr
     @Override
     public void onTileSelected(IDragEntity entity, int position, View view) {
         Toast.makeText(MainActivity.this, ((SimpleDragEntity) entity).getTag(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteClick(IDragEntity entity, int position, View view) {
+        addGridAdapter.getiDragEntities().add(entity);
+        addGridAdapter.notifyDataSetChanged();
+        tagDragAdapter.mDragEntries.remove(position);
+        tagDragAdapter.reFresh();
     }
 }
