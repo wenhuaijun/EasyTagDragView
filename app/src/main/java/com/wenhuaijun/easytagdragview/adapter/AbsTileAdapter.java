@@ -48,7 +48,7 @@ public abstract class AbsTileAdapter extends BaseAdapter implements
     /**
      * Contact data stored in cache. This is used to populate the associated view.
      */
-    protected ArrayList<IDragEntity> mDragEntries = null;
+    public ArrayList<IDragEntity> mDragEntries = null;
     /**
      * Back up of（备份） the temporarily removed Contact during dragging.
      */

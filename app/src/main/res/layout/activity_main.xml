@@ -71,6 +71,7 @@
                 android:layout_marginTop="8dp"
                 android:horizontalSpacing="12dp"
                 android:verticalSpacing="10dp"
+                android:fadingEdge="none"
                 android:layout_below="@+id/more_tv"
                 android:divider="@null"
                 android:layout_height="wrap_content">

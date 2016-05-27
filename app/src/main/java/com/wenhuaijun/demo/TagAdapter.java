@@ -71,8 +71,12 @@ public class TagAdapter extends AbsTileAdapter implements View.OnLongClickListen
 
         Log.i("heheda", "删除：entity--->" + ((SimpleDragEntity) entity).getTag() + "  position: " + position + " mDragEntries: " + mDragEntries.get(position));
         mDragEntries.remove(position);
-        notifyDataSetChanged();
-        mDragDropListener.onDataSetChangedForResult(mDragEntries);
+       reFresh();
 
     }
+    public void reFresh(){
+        notifyDataSetChanged();
+        mDragDropListener.onDataSetChangedForResult(mDragEntries);
+    }
+
 }
