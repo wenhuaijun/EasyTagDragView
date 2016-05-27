@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DragDropListView">
+        <attr name="fixed_type" format="boolean"/>
+        <attr name="anim_duration" format="integer"/>
+    </declare-styleable>
+</resources>

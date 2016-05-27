@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainActivity">
+    <RelativeLayout
+        android:id="@+id/tab"
+        android:layout_width="match_parent"
+        android:padding="8dp"
+        android:background="@color/gray_light"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="切换栏目"
+            />
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/delete"
+            android:layout_alignParentRight="true"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@+id/tab"
+        android:layout_width="match_parent"
+        android:padding="8dp"
+        android:layout_height="match_parent">
+        <com.wenhuaijun.easytagdragview.DragDropListView
+            android:id="@+id/tagdrag_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"
+            android:fadingEdge="none"
+            android:horizontalSpacing="12dp"
+            android:verticalSpacing="10dp"
+            app:fixed_type="true"
+            android:nestedScrollingEnabled="true"
+            android:numColumns="4"
+            />
+        <TextView
+            android:id="@+id/tv"
+            android:layout_below="@+id/tagdrag_view"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="长按排序或删除"
+            android:textSize="16sp"
+            />
+        <RelativeLayout
+            android:layout_marginTop="8dp"
+            android:layout_below="@id/tv"
+            android:layout_width="match_parent"
+            android:background="@color/gray_light"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/more_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="点击添加更多栏目"
+                />
+            <GridView
+                android:id="@+id/add_gridview"
+                android:layout_width="match_parent"
+                android:nestedScrollingEnabled="true"
+                android:numColumns="4"
+                android:layout_marginTop="8dp"
+                android:horizontalSpacing="12dp"
+                android:verticalSpacing="10dp"
+                android:layout_below="@+id/more_tv"
+                android:divider="@null"
+                android:layout_height="wrap_content">
+
+            </GridView>
+        </RelativeLayout>
+
+
+        <!-- Host container for the tile drag shadow -->
+        <FrameLayout
+            android:id="@+id/activity_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/tile_drag_shadow_overlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+        </FrameLayout>
+    </RelativeLayout>
+
+
+</RelativeLayout>
