@@ -3,6 +3,7 @@ package com.wenhuaijun.demo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -18,19 +19,16 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.DragDropListener, TipItemView.OnSelectedListener, TipItemView.OnDeleteClickListener */{
     private EasyTipDragView easyTipDragView;
-   // private Toolbar toolbar;
     private Button btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-  //      toolbar =(Toolbar)findViewById(R.id.toolbar);
-     // tableLayout =(TableLayout)findViewById(R.id.tabLayout);
-    //    setSupportActionBar(toolbar);
         easyTipDragView =(EasyTipDragView)findViewById(R.id.easy_tip_drag_view);
         btn =(Button)findViewById(R.id.btn);
         easyTipDragView.setAddData(obtainAddData());
         easyTipDragView.setDragData(obtainData());
+        //在easyTipDragView处于非编辑模式下点击item的回调。编辑模式下点击item作用为删除item
         easyTipDragView.setSelectedListener(new TipItemView.OnSelectedListener() {
             @Override
             public void onTileSelected(Tip entity, int position, View view) {
@@ -82,5 +80,24 @@ public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.D
     }
     public void toast(String str){
         Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode){
+            //点击返回键
+            case KeyEvent.KEYCODE_BACK:
+                //判断easyTipDragView是否已经显示出来
+                if(easyTipDragView.isOpen()){
+                    if(!easyTipDragView.onKeyBackDown()){
+                        btn.setVisibility(View.VISIBLE);
+                    }
+                    return true;
+                }
+                //....自己的业务逻辑
+
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
