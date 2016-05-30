@@ -53,7 +53,7 @@ public class TipItemView extends RelativeLayout {
         setOnClickListener(createClickListener());
         title =(TextView)findViewById(R.id.tagview_title);
         delete =(ImageView)findViewById(R.id.tagview_delete);
-        delete.setOnClickListener(new OnClickListener() {
+       /* delete.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mDeleteListener != null) {
@@ -61,7 +61,7 @@ public class TipItemView extends RelativeLayout {
                 }
 
             }
-        });
+        });*/
 
     }
 
@@ -69,12 +69,17 @@ public class TipItemView extends RelativeLayout {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mListener == null) {
-                    Log.i("heheda","mListener ==null");
-                    return;
+                if(delete.isShown()){
+                    //编辑模式下删除item
+                    if (mDeleteListener != null) {
+                        mDeleteListener.onDeleteClick(mIDragEntity, position, TipItemView.this);
+                    }
+                    return ;
                 }
-
-                mListener.onTileSelected(mIDragEntity,position, TipItemView.this);
+                //非编辑模式下回调点击item事件
+                if (mListener != null) {
+                    mListener.onTileSelected(mIDragEntity,position, TipItemView.this);
+                }
             }
         };
     }
@@ -97,7 +102,7 @@ public class TipItemView extends RelativeLayout {
             setVisibility(View.INVISIBLE);
         }
     }
-    public void setDragDropListener(){
+   /* public void setDragDropListener(){
         setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -108,7 +113,7 @@ public class TipItemView extends RelativeLayout {
                 return true;
             }
         });
-    }
+    }*/
     public void setItemListener(int position, OnSelectedListener listener) {
         mListener = listener;
         this.position =position;

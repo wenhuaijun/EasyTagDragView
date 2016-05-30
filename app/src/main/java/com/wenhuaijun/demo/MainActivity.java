@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.D
         setContentView(R.layout.activity_main);
         easyTipDragView =(EasyTipDragView)findViewById(R.id.easy_tip_drag_view);
         btn =(Button)findViewById(R.id.btn);
-        easyTipDragView.setAddData(obtainAddData());
-        easyTipDragView.setDragData(obtainData());
+        easyTipDragView.setAddData(TipDataModel.getAddTips());
+        easyTipDragView.setDragData(TipDataModel.getDragTips());
         //在easyTipDragView处于非编辑模式下点击item的回调。编辑模式下点击item作用为删除item
         easyTipDragView.setSelectedListener(new TipItemView.OnSelectedListener() {
             @Override
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.D
         });
     }
 
-    private List<Tip> obtainData() {
+    /*private List<Tip> obtainData() {
         List<Tip> list = new ArrayList<>();
         for (int i = 0; i <= 24; i++) {
             SimpleTitleTip entry = new SimpleTitleTip();
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.D
             list.add(entry);
         }
         return list;
-    }
+    }*/
     public void toast(String str){
         Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
     }

@@ -35,6 +35,7 @@ public class EasyTipDragView extends RelativeLayout implements AbsTipAdapter.Dra
     private OnDataChangeResultCallback dataResultCallback;
     private OnCompleteCallback completeCallback;
     private ArrayList<Tip> lists;
+    private boolean isOpen= false;
     public EasyTipDragView(Context context) {
         super(context);
         initView();
@@ -133,9 +134,11 @@ public class EasyTipDragView extends RelativeLayout implements AbsTipAdapter.Dra
     }
     public void close(){
         setVisibility(View.GONE);
+        isOpen =false;
     }
     public void open(){
         setVisibility(View.VISIBLE);
+        isOpen =true;
     }
 
     @Override
@@ -148,6 +151,7 @@ public class EasyTipDragView extends RelativeLayout implements AbsTipAdapter.Dra
                 break;
             case R.id.drag_finish_tv:
                 //完成关闭，回调数据
+                dragTipAdapter.cancelEditingStatus();
                 if(completeCallback!=null){
                     completeCallback.onComplete(lists);
                 }
@@ -162,5 +166,21 @@ public class EasyTipDragView extends RelativeLayout implements AbsTipAdapter.Dra
     //在最后点击"完成"关闭EasyTipDragView时回调
     public interface OnCompleteCallback{
         void onComplete(ArrayList<Tip> tips);
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+    //点击返回键监听
+    public boolean onKeyBackDown(){
+        //如果处于编辑模式，则取消编辑模式
+        if(dragTipAdapter.isEditing()){
+            dragTipAdapter.cancelEditingStatus();
+            return true;
+        }else{
+            //关闭该view
+            close();
+            return false;
+        }
     }
 }

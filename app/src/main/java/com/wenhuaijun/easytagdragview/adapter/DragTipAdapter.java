@@ -37,6 +37,8 @@ public class DragTipAdapter extends AbsTipAdapter implements View.OnLongClickLis
         }
         if(isEditing){
             view.showDeleteImg();
+        }else{
+            view.hideDeleteImg();
         }
         //设置点击监听
         view.setItemListener(position, mListener);
@@ -58,16 +60,8 @@ public class DragTipAdapter extends AbsTipAdapter implements View.OnLongClickLis
     }
     @Override
     public boolean onLongClick(View v) {
-        if(!isEditing){
-            isEditing =true;
-            if(callback!=null){
-                callback.firstDragStartCallback();
-            }
-            notifyDataSetChanged();
-
-        }
-        v.startDrag(EMPTY_CLIP_DATA, new View.DragShadowBuilder(),
-                DragDropGirdView.DRAG_FAVORITE_TILE, 0);
+        //开启编辑模式
+        startEdittingStatus(v);
         return true;
     }
     //删除按钮点击时
@@ -92,4 +86,24 @@ public class DragTipAdapter extends AbsTipAdapter implements View.OnLongClickLis
         void firstDragStartCallback();
     }
 
+    public boolean isEditing() {
+        return isEditing;
+    }
+
+    public void cancelEditingStatus(){
+        isEditing =false;
+        notifyDataSetChanged();
+    }
+    private  void startEdittingStatus(View v){
+        if(!isEditing){
+            isEditing =true;
+            if(callback!=null){
+                callback.firstDragStartCallback();
+            }
+            notifyDataSetChanged();
+
+        }
+        v.startDrag(EMPTY_CLIP_DATA, new View.DragShadowBuilder(),
+                DragDropGirdView.DRAG_FAVORITE_TILE, 0);
+    }
 }
