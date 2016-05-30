@@ -17,7 +17,7 @@
        
     在java代码中：
         给EasyTagDragView添加标签数据，包括已添加的标签数据和可添加的标签数据。
-        添加的数据bean需实现Tip类，可自由增加成员属。如没特殊需求，可直接使用提供的SimpleTitleTip类
+        添加的数据bean需实现Tip类，可自由增加成员属性。如没特殊需求，可直接使用提供的SimpleTitleTip类
         
         //设置已添加的的标签数据
         easyTipDragView.setDragData(TipDataModel.getDragTips());
