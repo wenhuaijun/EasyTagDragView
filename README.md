@@ -72,4 +72,6 @@
             return super.onKeyDown(keyCode, event);
         }
         
-        
+
+
+**后期增加更多自定义属性和一些API**
