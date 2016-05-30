@@ -61,7 +61,7 @@
                     //判断easyTipDragView是否已经显示出来
                     if(easyTipDragView.isOpen()){
                         if(!easyTipDragView.onKeyBackDown()){
-                            btn.setVisibility(View.VISIBLE);
+                            btn.setVisibility(View.VISIBLE);//自己的业务逻辑
                         }
                         return true;
                     }
