@@ -25,6 +25,9 @@
         //设置可以添加的标签数据
         easyTipDragView.setAddData(TipDataModel.getAddTips());
         
+        //显示EasyTagDragView
+        easyTipDragView.open();
+        
         //在easyTipDragView处于非编辑模式下点击item的回调（编辑模式下点击item作用为删除item）
         easyTipDragView.setSelectedListener(new TipItemView.OnSelectedListener() {
             @Override
@@ -74,4 +77,4 @@
         
 
 
-**后期增加更多自定义属性和一些API**
+**后期增加更多自定义属性和一些API,将View放入popupWindow，增加过渡动画**
