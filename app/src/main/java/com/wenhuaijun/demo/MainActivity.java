@@ -26,21 +26,25 @@ public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.D
         setContentView(R.layout.activity_main);
         easyTipDragView =(EasyTipDragView)findViewById(R.id.easy_tip_drag_view);
         btn =(Button)findViewById(R.id.btn);
+        //设置已包含的标签数据
         easyTipDragView.setAddData(TipDataModel.getAddTips());
+        //设置可以添加的标签数据
         easyTipDragView.setDragData(TipDataModel.getDragTips());
-        //在easyTipDragView处于非编辑模式下点击item的回调。编辑模式下点击item作用为删除item
+        //在easyTipDragView处于非编辑模式下点击item的回调（编辑模式下点击item作用为删除item）
         easyTipDragView.setSelectedListener(new TipItemView.OnSelectedListener() {
             @Override
             public void onTileSelected(Tip entity, int position, View view) {
                 toast(((SimpleTitleTip) entity).getTip());
             }
         });
+        //设置每次数据改变后的回调（例如每次拖拽排序了标签或者增删了标签都会回调）
         easyTipDragView.setDataResultCallback(new EasyTipDragView.OnDataChangeResultCallback() {
             @Override
             public void onDataChangeResult(ArrayList<Tip> tips) {
                 Log.i("heheda", tips.toString());
             }
         });
+        //设置点击“确定”按钮后最终数据的回调
         easyTipDragView.setOnCompleteCallback(new EasyTipDragView.OnCompleteCallback() {
             @Override
             public void onComplete(ArrayList<Tip> tips) {
