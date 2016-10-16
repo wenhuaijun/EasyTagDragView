@@ -52,7 +52,7 @@ public class DragDropController {
         final int screenX = x + mLocationOnScreen[0];
         final int screenY = y + mLocationOnScreen[1];
         final View view;
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
             view = mDragItemContainer.getViewForLocation(
                     x, y);
             if(view == null){
