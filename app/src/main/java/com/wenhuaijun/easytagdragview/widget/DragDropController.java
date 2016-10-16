@@ -1,5 +1,6 @@
 package com.wenhuaijun.easytagdragview.widget;
 
+import android.os.Build;
 import android.view.View;
 
 import com.wenhuaijun.easytagdragview.listener.OnDragDropListener;
@@ -47,17 +48,31 @@ public class DragDropController {
     }
 
     public void handleDragHovered(View v, int x, int y) {
-        v.getLocationOnScreen(mLocationOnScreen);
+        v.getLocationInWindow(mLocationOnScreen);
         final int screenX = x + mLocationOnScreen[0];
         final int screenY = y + mLocationOnScreen[1];
-        final View view = mDragItemContainer.getViewForLocation(
-                x, y);
-        if(view == null){
-            return;
+        final View view;
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
+            view = mDragItemContainer.getViewForLocation(
+                    x, y);
+            if(view == null){
+                return;
+            }
+            for (int i = 0; i < mOnDragDropListeners.size(); i++) {
+                mOnDragDropListeners.get(i).onDragHovered(x, y, view);
+            }
+        }else {
+            view = mDragItemContainer.getViewForLocation(
+                    screenX, screenY);
+            if(view == null){
+                return;
+            }
+            for (int i = 0; i < mOnDragDropListeners.size(); i++) {
+                mOnDragDropListeners.get(i).onDragHovered(screenX, screenY, view);
+            }
         }
-        for (int i = 0; i < mOnDragDropListeners.size(); i++) {
-            mOnDragDropListeners.get(i).onDragHovered(x, y, view);
-        }
+
+
     }
 
     public void handleDragFinished(int x, int y, boolean isRemoveView) {

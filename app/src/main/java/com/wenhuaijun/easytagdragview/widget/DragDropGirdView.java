@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -204,7 +205,7 @@ public class DragDropGirdView extends GridView implements OnDragDropListener,
             return;
         }
 
-        tileView.getLocationOnScreen(mLocationOnScreen);
+        tileView.getLocationInWindow(mLocationOnScreen);
         mDragShadowLeft = mLocationOnScreen[0];
         mDragShadowTop = mLocationOnScreen[1];
 
@@ -212,7 +213,7 @@ public class DragDropGirdView extends GridView implements OnDragDropListener,
         mTouchOffsetToChildLeft = x - mDragShadowLeft;
         mTouchOffsetToChildTop = y - mDragShadowTop;
 
-        mDragShadowParent.getLocationOnScreen(mLocationOnScreen);
+        mDragShadowParent.getLocationInWindow(mLocationOnScreen);
         mDragShadowLeft -= mLocationOnScreen[0];
         mDragShadowTop -= mLocationOnScreen[1];
 
@@ -227,7 +228,7 @@ public class DragDropGirdView extends GridView implements OnDragDropListener,
     @Override
     public void onDragHovered(int x, int y, View tileView) {
         // Update the drag shadow location.
-        mDragShadowParent.getLocationOnScreen(mLocationOnScreen);
+        mDragShadowParent.getLocationInWindow(mLocationOnScreen);
         mDragShadowLeft = x - mTouchOffsetToChildLeft - mLocationOnScreen[0];
         mDragShadowTop = y - mTouchOffsetToChildTop - mLocationOnScreen[1];
         // Draw the drag shadow at its last known location if the drag shadow exists.
@@ -275,11 +276,17 @@ public class DragDropGirdView extends GridView implements OnDragDropListener,
 
     @Override
     public View getViewForLocation(int x, int y) {
-        getLocationOnScreen(mLocationOnScreen);
+        View child;
+        getLocationInWindow(mLocationOnScreen);
         // Calculate the X and Y coordinates(坐标) of the drag event relative to the view
         final int viewX = x - mLocationOnScreen[0];
         final int viewY = y - mLocationOnScreen[1];
-        View child = getViewAtPosition(x, y);
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
+             child = getViewAtPosition(x, y);
+        }else {
+             child = getViewAtPosition(viewX, viewY);
+        }
+
 
         return child;
     }
