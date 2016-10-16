@@ -279,7 +279,7 @@ public class DragDropGirdView extends GridView implements OnDragDropListener,
         // Calculate the X and Y coordinates(坐标) of the drag event relative to the view
         final int viewX = x - mLocationOnScreen[0];
         final int viewY = y - mLocationOnScreen[1];
-        View child = getViewAtPosition(viewX, viewY);
+        View child = getViewAtPosition(x, y);
 
         return child;
     }

@@ -51,12 +51,12 @@ public class DragDropController {
         final int screenX = x + mLocationOnScreen[0];
         final int screenY = y + mLocationOnScreen[1];
         final View view = mDragItemContainer.getViewForLocation(
-                screenX, screenY);
+                x, y);
         if(view == null){
             return;
         }
         for (int i = 0; i < mOnDragDropListeners.size(); i++) {
-            mOnDragDropListeners.get(i).onDragHovered(screenX, screenY, view);
+            mOnDragDropListeners.get(i).onDragHovered(x, y, view);
         }
     }
 

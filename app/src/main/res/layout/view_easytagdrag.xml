@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray_light"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
     <RelativeLayout
         android:id="@+id/tab"
         android:layout_width="match_parent"
         android:padding="8dp"
-        android:background="@color/gray_light"
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
@@ -69,7 +69,6 @@
             android:layout_below="@id/tv"
             android:layout_width="match_parent"
             android:paddingTop="4dp"
-            android:background="@color/gray_item"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/more_tv"

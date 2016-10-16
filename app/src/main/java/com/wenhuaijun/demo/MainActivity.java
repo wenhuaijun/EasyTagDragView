@@ -19,13 +19,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.DragDropListener, TipItemView.OnSelectedListener, TipItemView.OnDeleteClickListener */{
     private EasyTipDragView easyTipDragView;
-    private Button btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         easyTipDragView =(EasyTipDragView)findViewById(R.id.easy_tip_drag_view);
-        btn =(Button)findViewById(R.id.btn);
         //设置已包含的标签数据
         easyTipDragView.setAddData(TipDataModel.getAddTips());
         //设置可以添加的标签数据
@@ -49,39 +47,12 @@ public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.D
             @Override
             public void onComplete(ArrayList<Tip> tips) {
                 toast("最终数据：" + tips.toString());
-                btn.setVisibility(View.VISIBLE);
+             //   btn.setVisibility(View.VISIBLE);
             }
         });
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                easyTipDragView.open();
-                btn.setVisibility(View.GONE);
-            }
-        });
+        easyTipDragView.open();
     }
 
-    /*private List<Tip> obtainData() {
-        List<Tip> list = new ArrayList<>();
-        for (int i = 0; i <= 24; i++) {
-            SimpleTitleTip entry = new SimpleTitleTip();
-            entry.setId(i);
-            entry.setTip(i + " Item");
-            list.add(entry);
-        }
-        return list;
-    }
-
-    private List<Tip> obtainAddData() {
-        List<Tip> list = new ArrayList<>();
-        for (int i = 25; i <= 35; i++) {
-            SimpleTitleTip entry = new SimpleTitleTip();
-            entry.setId(i);
-            entry.setTip(i + " Item");
-            list.add(entry);
-        }
-        return list;
-    }*/
     public void toast(String str){
         Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
     }
@@ -94,7 +65,7 @@ public class MainActivity extends AppCompatActivity /*implements AbsTipAdapter.D
                 //判断easyTipDragView是否已经显示出来
                 if(easyTipDragView.isOpen()){
                     if(!easyTipDragView.onKeyBackDown()){
-                        btn.setVisibility(View.VISIBLE);
+                      //  btn.setVisibility(View.VISIBLE);
                     }
                     return true;
                 }
